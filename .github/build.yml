@@ -1,4 +1,4 @@
-name: Build Mini Kasir Tugas 3
+name: Build Mini Kasir
 
 on:
   push:
@@ -21,17 +21,16 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y g++
 
-      - name: Compile program
+      - name: Compile C++
         run: |
-          g++ -std=c++17 *.cpp -o mini-kasir
-
-      - name: Check hasil build
-        run: ls -lh mini-kasir
+          g++ -std=c++17 main.cpp -o mini-kasir
+          mkdir -p hasil
+          cp mini-kasir hasil/mini-kasir
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
           name: mini-kasir
-          path: mini-kasir
+          path: hasil/mini-kasir
           if-no-files-found: error
-          retention-days: 7 
+          retention-days: 7
