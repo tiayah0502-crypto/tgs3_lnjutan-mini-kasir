@@ -1,0 +1,20 @@
+name: Build Mini Kasir C++
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install compiler
+        run: sudo apt-get update && sudo apt-get install -y g++
+
+      - name: Build program C++
+        run: g++ -std=c++17 *.cpp -o mini-kasir
