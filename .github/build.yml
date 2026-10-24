@@ -2,7 +2,8 @@ name: Build Mini Kasir
 
 on:
   push:
-    branches: [main]
+    branches:
+      - main
   workflow_dispatch:
 
 permissions:
@@ -21,30 +22,28 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y g++
 
-      - name: Find C++ file
-        id: source
+      - name: Check source file
+        run: |
+          find . -maxdepth 3 -type f -name "*.cpp"
+
+      - name: Compile program
         shell: bash
         run: |
-          FILE=$(find . -maxdepth 2 -type f -name '*.cpp' | head -n 1)
+          SOURCE=$(find . -maxdepth 3 -type f -name "*.cpp" ! -path "./.git/*" | head -n 1)
 
-          if [ -z "$FILE" ]; then
-            echo "File C++ tidak ditemukan!"
+          if [ -z "$SOURCE" ]; then
+            echo "File C++ tidak ditemukan."
             exit 1
           fi
 
-          echo "file=$FILE" >> "$GITHUB_OUTPUT"
-          echo "File ditemukan: $FILE"
+          echo "Mengompilasi: $SOURCE"
+          g++ -std=c++17 "$SOURCE" -o mini-kasir
 
-      - name: Compile program
+      - name: Prepare artifact
         run: |
-          g++ -std=c++17 "${{ steps.source.outputs.file }}" -o mini-kasir
           mkdir -p hasil
           cp mini-kasir hasil/mini-kasir
-
-      - name: Verify output
-        run: |
-          test -f hasil/mini-kasir
-          ls -lh hasil/mini-kasir
+          ls -lh hasil/
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
