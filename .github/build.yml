@@ -21,11 +21,30 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y g++
 
-      - name: Compile C++
+      - name: Find C++ file
+        id: source
+        shell: bash
         run: |
-          g++ -std=c++17 main.cpp -o mini-kasir
+          FILE=$(find . -maxdepth 2 -type f -name '*.cpp' | head -n 1)
+
+          if [ -z "$FILE" ]; then
+            echo "File C++ tidak ditemukan!"
+            exit 1
+          fi
+
+          echo "file=$FILE" >> "$GITHUB_OUTPUT"
+          echo "File ditemukan: $FILE"
+
+      - name: Compile program
+        run: |
+          g++ -std=c++17 "${{ steps.source.outputs.file }}" -o mini-kasir
           mkdir -p hasil
           cp mini-kasir hasil/mini-kasir
+
+      - name: Verify output
+        run: |
+          test -f hasil/mini-kasir
+          ls -lh hasil/mini-kasir
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
