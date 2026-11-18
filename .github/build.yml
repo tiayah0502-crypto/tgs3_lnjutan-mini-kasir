@@ -1,4 +1,5 @@
-name: Build Mini Kasir
+
+name: Build Mini Kasir EXE
 
 on:
   push:
@@ -17,38 +18,17 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Install compiler
+      - name: Install MinGW compiler
         run: |
           sudo apt-get update
-          sudo apt-get install -y g++
+          sudo apt-get install -y g++-mingw-w64-x86-64
 
-      - name: Check source file
+      - name: Compile C++ to EXE
         run: |
-          find . -maxdepth 3 -type f -name "*.cpp"
+          x86_64-w64-mingw32-g++ -std=c++17 main.cpp -o MiniKasir.exe
 
-      - name: Compile program
-        shell: bash
-        run: |
-          SOURCE=$(find . -maxdepth 3 -type f -name "*.cpp" ! -path "./.git/*" | head -n 1)
-
-          if [ -z "$SOURCE" ]; then
-            echo "File C++ tidak ditemukan."
-            exit 1
-          fi
-
-          echo "Mengompilasi: $SOURCE"
-          g++ -std=c++17 "$SOURCE" -o mini-kasir
-
-      - name: Prepare artifact
-        run: |
-          mkdir -p hasil
-          cp mini-kasir hasil/mini-kasir
-          ls -lh hasil/
-
-      - name: Upload Artifact
+      - name: Upload EXE
         uses: actions/upload-artifact@v4
         with:
-          name: mini-kasir
-          path: hasil/mini-kasir
-          if-no-files-found: error
-          retention-days: 7
+          name: MiniKasir-Windows
+          path: MiniKasir.exe
