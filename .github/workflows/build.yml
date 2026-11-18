@@ -11,20 +11,20 @@ jobs:
     runs-on: windows-latest
 
     steps:
-      - name: Checkout
+      - name: Checkout Repository
         uses: actions/checkout@v4
 
-      - name: Install Compiler
+      - name: Setup MSYS2
         uses: msys2/setup-msys2@v2
         with:
           msystem: MINGW64
           update: true
           install: mingw-w64-x86_64-gcc
 
-      - name: Build EXE
+      - name: Compile Static EXE
         shell: msys2 {0}
         run: |
-          g++ -std=c++17 main.cpp -o kasir.exe
+          g++ -std=c++17 -O2 -static -static-libgcc -static-libstdc++ main.cpp -o kasir.exe
 
       - name: Upload EXE
         uses: actions/upload-artifact@v4
